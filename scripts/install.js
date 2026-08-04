@@ -4,7 +4,7 @@ const path = require('path');
 const os = require('os');
 const { execSync } = require('child_process');
 
-const REPO = 'Min/vesper-harness';
+const REPO = 'minseokk77/vesper-harness';
 const VERSION = 'v3.0.0';
 
 const platform = os.platform();
