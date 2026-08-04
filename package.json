@@ -1,0 +1,20 @@
+{
+  "name": "vesper-harness",
+  "version": "3.0.0",
+  "description": "The 5-Stage Core Engine for autonomous AI coding (Aider + SWE-agent + Hermes) with TUI",
+  "main": "bin/run.js",
+  "bin": {
+    "vesper": "bin/run.js",
+    "vesper-harness": "bin/run.js"
+  },
+  "scripts": {
+    "postinstall": "node scripts/install.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/Min/vesper-harness"
+  },
+  "author": "Min",
+  "license": "MIT",
+  "dependencies": {}
+}

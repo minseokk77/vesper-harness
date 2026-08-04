@@ -6,10 +6,14 @@ use colored::Colorize;
 async fn main() {
     println!("{}", "=============================================".cyan());
     println!("{}", "🔍 Vesper Harness 스킬 호환성 테스트 시작".bold().green());
-    println!("{}", "대상 디렉토리: C:\\Users\\minse\\Documents\\Min\\Min\\ai agent\\skills".dimmed());
+
+    let skills_dir_str = std::env::var("VESPER_SKILLS_DIR")
+        .unwrap_or_else(|_| "./skills".to_string());
+    
+    println!("{}", format!("대상 디렉토리: {}", skills_dir_str).dimmed());
     println!("{}", "=============================================".cyan());
 
-    let skills_dir = Path::new("C:\\Users\\minse\\Documents\\Min\\Min\\ai agent\\skills");
+    let skills_dir = Path::new(&skills_dir_str);
     
     if !skills_dir.exists() {
         println!("{}", "❌ 스킬 디렉토리를 찾을 수 없습니다.".red());
