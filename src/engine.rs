@@ -274,9 +274,15 @@ export default function Pico2WCustomPCB() {
         </div>
 
         {/* Reset / Refresh Button */}
-        <div className="absolute bottom-10 w-8 h-8 bg-gray-200 rounded-full border-4 border-gray-400 flex items-center justify-center shadow cursor-pointer hover:bg-gray-300 active:scale-95 transition-transform">
+        <div className="absolute bottom-16 w-8 h-8 bg-gray-200 rounded-full border-4 border-gray-400 flex items-center justify-center shadow cursor-pointer hover:bg-gray-300 active:scale-95 transition-transform">
           <div className="w-4 h-4 bg-red-500 rounded-full shadow-inner"></div>
-          <span className="absolute -bottom-6 text-xs text-emerald-400 font-mono">RESET</span>
+          <span className="absolute -bottom-6 text-xs text-emerald-400 font-mono text-center leading-tight">RESET</span>
+        </div>
+
+        {/* Secondary USB Type-C Port (Expansion/ESP32) */}
+        <div className="absolute bottom-0 w-16 h-6 bg-gray-300 rounded-t-md border-t-2 border-gray-400 flex items-center justify-center -mb-1 shadow-inner">
+          <div className="w-10 h-2 bg-black rounded-full opacity-80"></div>
+          <span className="absolute -bottom-8 text-xs text-emerald-400 font-mono text-center leading-tight">USB-C<br/><span className="text-[9px]">(ESP32/EXP)</span></span>
         </div>
       </div>
     </div>
@@ -288,7 +294,8 @@ export default function Pico2WCustomPCB() {
         let bom_json = r#"[
   {"id": "U1", "part": "RP2350 Microcontroller", "qty": 1, "purchased": true},
   {"id": "U2", "part": "CYW43439 Wi-Fi/BT Module", "qty": 1, "purchased": true},
-  {"id": "J1", "part": "USB Type-C Receptacle (16-pin)", "qty": 1, "purchased": true},
+  {"id": "J1", "part": "USB Type-C Receptacle (Main Power/Data)", "qty": 1, "purchased": true},
+  {"id": "J2", "part": "USB Type-C Receptacle (Peripheral/ESP32)", "qty": 1, "purchased": true},
   {"id": "SW1", "part": "Tactile Push Button (Reset/Refresh)", "qty": 1, "purchased": true},
   {"id": "P1", "part": "Pin Headers", "note": "REMOVED", "qty": 0, "purchased": false}
 ]"#;
@@ -296,7 +303,9 @@ export default function Pico2WCustomPCB() {
         
         let assembly_guide = r#"# Custom Pico 2W Minimal Assembly Guide
 
-1. **USB Type-C Upgrade**: Micro-USB replaced with Type-C. CC1/CC2 pulled down with 5.1k resistors.
+1. **Dual USB Type-C Design**: 
+   - J1 (Top): Primary Power and USB Data connection.
+   - J2 (Bottom): Expansion port routed to UART/I2C pins for external modules (e.g., ESP32 coprocessor).
 2. **Dedicated Reset Button**: Tactile switch (SW1) wired to RUN pin.
 3. **No Pin Headers**: All edge through-holes and castellated pins have been removed from the PCB layout to minimize footprint.
 "#;
