@@ -187,49 +187,81 @@ jobs:
     }
 
     async fn fetch_free_ai(&self, prompt: &str) -> Option<String> {
-        let api_key = std::env::var("OPENROUTER_API_KEY").unwrap_or_default();
-        if api_key.is_empty() {
-            self.log("   [AI Cloud] ⚠️ OPENROUTER_API_KEY가 환경변수에 없습니다. 오프라인(Mock) 로직으로 우회합니다.").await;
-            return None;
-        }
+        let gemini_key = std::env::var("GEMINI_API_KEY").unwrap_or_default();
+        let groq_key = std::env::var("GROQ_API_KEY").unwrap_or_default();
 
-        self.log("   [AI Cloud] 🤖 오픈라우터(무료 클라우드 AI)에 분석을 요청합니다...").await;
-        let client = reqwest::Client::new();
-        // 2026년 최신 구글 무료 모델 (가장 똑똑하고 넉넉한 토큰)
-        let payload = serde_json::json!({
-            "model": "google/gemma-4-31b-it:free",
-            "messages": [
-                {"role": "user", "content": prompt}
-            ],
-            "stream": false
-        });
-
-        match client.post("https://openrouter.ai/api/v1/chat/completions")
-            .header("Authorization", format!("Bearer {}", api_key))
-            .header("HTTP-Referer", "https://github.com/minseokk77/vesper-harness")
-            .header("X-Title", "Vesper Harness Engine")
-            .json(&payload)
-            .send()
-            .await 
-        {
-            Ok(resp) if resp.status().is_success() => {
-                if let Ok(json) = resp.json::<serde_json::Value>().await {
-                    if let Some(content) = json["choices"][0]["message"]["content"].as_str() {
-                        self.log("   [AI Cloud] ✅ 클라우드 무료 AI 응답 수신 완료!").await;
-                        return Some(content.to_string());
+        if !gemini_key.is_empty() {
+            self.log("   [AI Cloud] 🤖 Google Gemini API(직접 연결)로 분석을 요청합니다...").await;
+            let client = reqwest::Client::new();
+            let payload = serde_json::json!({
+                "contents": [{
+                    "parts": [{"text": prompt}]
+                }]
+            });
+            let url = format!("https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key={}", gemini_key);
+            
+            match client.post(&url)
+                .header("Content-Type", "application/json")
+                .json(&payload)
+                .send()
+                .await 
+            {
+                Ok(resp) if resp.status().is_success() => {
+                    if let Ok(json) = resp.json::<serde_json::Value>().await {
+                        if let Some(content) = json["candidates"][0]["content"]["parts"][0]["text"].as_str() {
+                            self.log("   [AI Cloud] ✅ Gemini 직접 연결 응답 수신 완료!").await;
+                            return Some(content.to_string());
+                        }
                     }
+                    None
                 }
-                None
+                Ok(resp) => {
+                    self.log(&format!("   [AI Cloud] ❌ Gemini API 에러: {}", resp.status())).await;
+                    None
+                }
+                Err(e) => {
+                    self.log(&format!("   [AI Cloud] ❌ 네트워크 에러: {}", e)).await;
+                    None
+                }
             }
-            Ok(resp) => {
-                let status = resp.status();
-                self.log(&format!("   [AI Cloud] ❌ API 에러 발생: {}", status)).await;
-                None
+        } else if !groq_key.is_empty() {
+            self.log("   [AI Cloud] ⚡ Groq 초고속 API(Llama 3)로 분석을 요청합니다...").await;
+            let client = reqwest::Client::new();
+            let payload = serde_json::json!({
+                "model": "llama-3.1-70b-versatile",
+                "messages": [
+                    {"role": "user", "content": prompt}
+                ],
+                "stream": false
+            });
+            
+            match client.post("https://api.groq.com/openai/v1/chat/completions")
+                .header("Authorization", format!("Bearer {}", groq_key))
+                .json(&payload)
+                .send()
+                .await 
+            {
+                Ok(resp) if resp.status().is_success() => {
+                    if let Ok(json) = resp.json::<serde_json::Value>().await {
+                        if let Some(content) = json["choices"][0]["message"]["content"].as_str() {
+                            self.log("   [AI Cloud] ✅ Groq 초고속 응답 수신 완료!").await;
+                            return Some(content.to_string());
+                        }
+                    }
+                    None
+                }
+                Ok(resp) => {
+                    self.log(&format!("   [AI Cloud] ❌ Groq API 에러: {}", resp.status())).await;
+                    None
+                }
+                Err(e) => {
+                    self.log(&format!("   [AI Cloud] ❌ 네트워크 에러: {}", e)).await;
+                    None
+                }
             }
-            Err(e) => {
-                self.log(&format!("   [AI Cloud] ❌ 네트워크 에러 발생: {}", e)).await;
-                None
-            }
+        } else {
+            self.log("   [AI Cloud] ⚠️ GEMINI_API_KEY 또는 GROQ_API_KEY가 없습니다. 오프라인(Mock) 로직으로 우회합니다.").await;
+            None
         }
     }
 
