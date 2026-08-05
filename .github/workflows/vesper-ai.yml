@@ -1,0 +1,46 @@
+name: Vesper AI Code Review & Automation
+
+on:
+  pull_request:
+    types: [opened, synchronize, reopened]
+  issue_comment:
+    types: [created]
+
+jobs:
+  vesper-harness:
+    name: Run Vesper Harness AI Engine
+    # PR이 올라오거나 이슈에 댓글(명령어)이 달렸을 때 작동합니다.
+    runs-on: ubuntu-latest
+    
+    # 봇이 PR에 코멘트를 달고 코드를 수정할 수 있는 권한 부여
+    permissions:
+      contents: write
+      pull-requests: write
+      issues: write
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0 # AI가 전체 코드 히스토리를 파악하도록 설정
+
+      - name: Setup Node.js & pnpm
+        uses: pnpm/action-setup@v2
+        with:
+          version: 8
+      - name: Use Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '18.x'
+          cache: 'pnpm'
+
+      - name: Install dependencies
+        run: pnpm install
+
+      - name: Run Vesper Harness Engine
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          GEMINI_API_KEY: ${{ secrets.GEMINI_API_KEY }}
+          GROQ_API_KEY: ${{ secrets.GROQ_API_KEY }}
+        run: |
+          pnpm exec vesper-harness --ci
