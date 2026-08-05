@@ -1,0 +1,28 @@
+(kicad_pcb (version 20211014) (generator pcbnew)
+  (general
+    (thickness 1.6)
+  )
+  (paper "A4")
+  (layers
+    (0 "F.Cu" signal)
+    (31 "B.Cu" signal)
+    (36 "B.SilkS" user "B.Silkscreen")
+    (37 "F.SilkS" user "F.Silkscreen")
+    (38 "B.Mask" user)
+    (39 "F.Mask" user)
+    (44 "Edge.Cuts" user)
+    (48 "B.Fab" user)
+    (49 "F.Fab" user)
+  )
+  (setup
+    (pad_to_mask_clearance 0)
+  )
+
+  (gr_line (start 100 100) (end 120 100) (layer "Edge.Cuts") (width 0.1) (tstamp b98970e5-776f-4d37-8ff8-e5659850c99a))
+  (gr_line (start 120 100) (end 120 150) (layer "Edge.Cuts") (width 0.1) (tstamp 1461f6ab-fb23-455b-81f7-e75c6130df05))
+  (gr_line (start 120 150) (end 100 150) (layer "Edge.Cuts") (width 0.1) (tstamp faf3fb0d-0348-4c12-8877-333dd5a92a2a))
+  (gr_line (start 100 150) (end 100 100) (layer "Edge.Cuts") (width 0.1) (tstamp 89fce8f3-a128-4ad0-b8c3-f09b55502cfa))
+  (gr_text "Pico 2W Minimal\nDual Type-C\nBy Vesper Sprocket" (at 110 125) (layer "F.SilkS")
+    (effects (font (size 1.5 1.5) (thickness 0.2))) (tstamp dcb9918f-3d14-41d3-ad08-df8203c40960)
+  )
+)

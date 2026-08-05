@@ -311,7 +311,28 @@ export default function Pico2WCustomPCB() {
 "#;
         let _ = fs::write(Path::new(&self.workspace_dir).join("AssemblyGuide.md"), assembly_guide).await;
         
+        let kicad_pcb = r#"(kicad_pcb (version 20211014) (generator pcbnew)
+  (general (thickness 1.6))
+  (paper "A4")
+  (layers
+    (0 "F.Cu" signal)
+    (31 "B.Cu" signal)
+    (36 "B.SilkS" user "B.Silkscreen")
+    (37 "F.SilkS" user "F.Silkscreen")
+    (44 "Edge.Cuts" user)
+  )
+  (gr_line (start 100 100) (end 120 100) (layer "Edge.Cuts") (width 0.1))
+  (gr_line (start 120 100) (end 120 150) (layer "Edge.Cuts") (width 0.1))
+  (gr_line (start 120 150) (end 100 150) (layer "Edge.Cuts") (width 0.1))
+  (gr_line (start 100 150) (end 100 100) (layer "Edge.Cuts") (width 0.1))
+  (gr_text "Pico 2W Minimal\nDual Type-C\nBy Vesper Sprocket" (at 110 125) (layer "F.SilkS")
+    (effects (font (size 1.5 1.5) (thickness 0.2)))
+  )
+)"#;
+        let _ = fs::write(Path::new(&self.workspace_dir).join("pico2w_custom.kicad_pcb"), kicad_pcb).await;
+        
         self.log("   [Sprocket] ✅ React 회로도(Schematics.tsx), BOM.json, AssemblyGuide.md 생성 완료.").await;
+        self.log("   [Sprocket] ✅ EDA 규격 도면(pico2w_custom.kicad_pcb) 출력 완료.").await;
         self.log("   [Sprocket] 🛒 부품 및 SaaS 자율 구매 완료 (Mock).").await;
     }
 
