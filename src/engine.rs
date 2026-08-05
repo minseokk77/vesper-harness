@@ -246,10 +246,61 @@ jobs:
         
         self.log("   [Sprocket] 🚀 npx spikonado/sprocket 실행 중 (크로스 플랫폼 모드)...").await;
         
-        // Mock output for sprocket
-        let _ = fs::write(Path::new(&self.workspace_dir).join("Schematics.tsx"), "export default function Schematics() {\n  return <div>Hardware Circuit Rendered</div>;\n}").await;
-        let _ = fs::write(Path::new(&self.workspace_dir).join("BOM.json"), "[\n  {\"part\": \"Resistor 10k\", \"qty\": 10, \"purchased\": true}\n]").await;
-        let _ = fs::write(Path::new(&self.workspace_dir).join("AssemblyGuide.md"), "# Assembly Guide\n\n1. Solder resistor to PCB.").await;
+        // Mock output for sprocket: Pico 2W Custom Minimal PCB
+        let schematics_code = r#"import React from 'react';
+
+export default function Pico2WCustomPCB() {
+  return (
+    <div className="flex flex-col items-center justify-center p-8 bg-gray-900 text-white min-h-screen">
+      <h1 className="text-3xl font-bold mb-8">Pico 2W Custom Minimal PCB</h1>
+      <div className="relative w-48 h-80 bg-emerald-800 rounded-xl border-4 border-emerald-900 shadow-2xl flex flex-col items-center p-4 overflow-hidden">
+        {/* USB Type-C Port */}
+        <div className="absolute top-0 w-16 h-6 bg-gray-300 rounded-b-md border-b-2 border-gray-400 flex items-center justify-center -mt-1 shadow-inner">
+          <div className="w-10 h-2 bg-black rounded-full opacity-80"></div>
+          <span className="absolute -top-6 text-xs text-emerald-400 font-mono">USB-C</span>
+        </div>
+
+        {/* RP2350 MCU */}
+        <div className="absolute top-20 w-16 h-16 bg-gray-950 rounded border border-gray-700 flex items-center justify-center shadow-lg">
+          <span className="text-[10px] font-mono text-gray-500 transform -rotate-90">RP2350</span>
+        </div>
+
+        {/* CYW43439 Wireless Chip + Antenna */}
+        <div className="absolute top-40 w-12 h-12 bg-gray-950 rounded border border-gray-700 flex items-center justify-center shadow-lg">
+          <span className="text-[8px] font-mono text-gray-500">CYW43439</span>
+        </div>
+        <div className="absolute top-40 right-2 w-4 h-12 border-2 border-emerald-400 border-dashed opacity-50">
+          <span className="text-[8px] absolute -top-4 -left-2 text-emerald-400">ANT</span>
+        </div>
+
+        {/* Reset / Refresh Button */}
+        <div className="absolute bottom-10 w-8 h-8 bg-gray-200 rounded-full border-4 border-gray-400 flex items-center justify-center shadow cursor-pointer hover:bg-gray-300 active:scale-95 transition-transform">
+          <div className="w-4 h-4 bg-red-500 rounded-full shadow-inner"></div>
+          <span className="absolute -bottom-6 text-xs text-emerald-400 font-mono">RESET</span>
+        </div>
+      </div>
+    </div>
+  );
+}
+"#;
+        let _ = fs::write(Path::new(&self.workspace_dir).join("Schematics.tsx"), schematics_code).await;
+        
+        let bom_json = r#"[
+  {"id": "U1", "part": "RP2350 Microcontroller", "qty": 1, "purchased": true},
+  {"id": "U2", "part": "CYW43439 Wi-Fi/BT Module", "qty": 1, "purchased": true},
+  {"id": "J1", "part": "USB Type-C Receptacle (16-pin)", "qty": 1, "purchased": true},
+  {"id": "SW1", "part": "Tactile Push Button (Reset/Refresh)", "qty": 1, "purchased": true},
+  {"id": "P1", "part": "Pin Headers", "note": "REMOVED", "qty": 0, "purchased": false}
+]"#;
+        let _ = fs::write(Path::new(&self.workspace_dir).join("BOM.json"), bom_json).await;
+        
+        let assembly_guide = r#"# Custom Pico 2W Minimal Assembly Guide
+
+1. **USB Type-C Upgrade**: Micro-USB replaced with Type-C. CC1/CC2 pulled down with 5.1k resistors.
+2. **Dedicated Reset Button**: Tactile switch (SW1) wired to RUN pin.
+3. **No Pin Headers**: All edge through-holes and castellated pins have been removed from the PCB layout to minimize footprint.
+"#;
+        let _ = fs::write(Path::new(&self.workspace_dir).join("AssemblyGuide.md"), assembly_guide).await;
         
         self.log("   [Sprocket] ✅ React 회로도(Schematics.tsx), BOM.json, AssemblyGuide.md 생성 완료.").await;
         self.log("   [Sprocket] 🛒 부품 및 SaaS 자율 구매 완료 (Mock).").await;
