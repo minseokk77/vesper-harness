@@ -195,9 +195,9 @@ jobs:
 
         self.log("   [AI Cloud] 🤖 오픈라우터(무료 클라우드 AI)에 분석을 요청합니다...").await;
         let client = reqwest::Client::new();
-        // Llama-3-8B 무료 모델 (또는 google/gemini-1.5-flash-free 등)
+        // 가장 무료 토큰 제한이 넉넉하고 빠른 Gemini Flash 무료 모델로 설정
         let payload = serde_json::json!({
-            "model": "meta-llama/llama-3-8b-instruct:free",
+            "model": "google/gemini-1.5-flash:free",
             "messages": [
                 {"role": "user", "content": prompt}
             ],
