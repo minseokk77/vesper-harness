@@ -35,19 +35,23 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
     tokio::spawn(async move {
         let mut vesper_engine = engine::VesperEngine::new(tx_clone.clone());
         let _ = tx_clone.send("🚀 Vesper Harness (v3.0.0) - TUI Engine Started".to_string()).await;
-        let _ = tx_clone.send("'/task [작업내용]' 을 입력하여 무결성 AI 코딩을 시작하세요. (종료: ESC)".to_string()).await;
+        let _ = tx_clone.send("'/task [작업내용]' 또는 '/sprocket [설계내용]' 을 입력하여 무결성 AI 코딩을 시작하세요. (종료: ESC)".to_string()).await;
         
         while let Some(cmd) = cmd_rx.recv().await {
             if cmd == "/export-ci" {
                 let _ = tx_clone.send("📦 GitHub Actions 워크플로우를 생성합니다...".to_string()).await;
                 vesper_engine.export_github_workflow().await;
                 let _ = tx_clone.send("✅ `.github/workflows/vesper-agent.yml` 생성 완료.".to_string()).await;
+            } else if cmd.starts_with("/sprocket ") {
+                let task_desc = cmd.trim_start_matches("/sprocket ").trim();
+                let _ = tx_clone.send(format!("⚙️ Sprocket: 하드웨어 태스크 '{}' 접수 완료. 5단계 엔진 구동!", task_desc)).await;
+                vesper_engine.run_pipeline(&format!("sprocket 하드웨어 {}", task_desc)).await;
             } else if cmd.starts_with("/task ") {
                 let task_desc = cmd.trim_start_matches("/task ").trim();
                 let _ = tx_clone.send(format!("🔥 중앙 통제실: 임무 '{}' 접수 완료. 엔진 구동!", task_desc)).await;
                 vesper_engine.run_pipeline(task_desc).await;
             } else {
-                let _ = tx_clone.send("[System] '/task [내용]' 또는 '/export-ci' 명령어를 사용하세요.".to_string()).await;
+                let _ = tx_clone.send("[System] '/task [내용]' 또는 '/sprocket [내용]' 명령어를 사용하세요.".to_string()).await;
             }
         }
     });

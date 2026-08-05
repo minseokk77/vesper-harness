@@ -239,6 +239,22 @@ jobs:
         }
     }
 
+    async fn invoke_sprocket_agent(&self) {
+        self.log("   [Sprocket] ⚙️ Sprocket 통합 에이전트 가동 (하드웨어/소프트웨어 동시 설계)").await;
+        self.log("   [Sprocket] 🌐 웹 최상급 컨텍스트 추출 및 SaaS/부품 자율 구매 모듈 준비...").await;
+        sleep(Duration::from_millis(1500)).await;
+        
+        self.log("   [Sprocket] 🚀 npx spikonado/sprocket 실행 중 (크로스 플랫폼 모드)...").await;
+        
+        // Mock output for sprocket
+        let _ = fs::write(Path::new(&self.workspace_dir).join("Schematics.tsx"), "export default function Schematics() {\n  return <div>Hardware Circuit Rendered</div>;\n}").await;
+        let _ = fs::write(Path::new(&self.workspace_dir).join("BOM.json"), "[\n  {\"part\": \"Resistor 10k\", \"qty\": 10, \"purchased\": true}\n]").await;
+        let _ = fs::write(Path::new(&self.workspace_dir).join("AssemblyGuide.md"), "# Assembly Guide\n\n1. Solder resistor to PCB.").await;
+        
+        self.log("   [Sprocket] ✅ React 회로도(Schematics.tsx), BOM.json, AssemblyGuide.md 생성 완료.").await;
+        self.log("   [Sprocket] 🛒 부품 및 SaaS 자율 구매 완료 (Mock).").await;
+    }
+
     async fn run_playwright_verify(&self) -> Result<bool, String> {
         self.log("   [Playwright] 🎭 헤드리스 브라우저를 통한 UI/UX 자율 검증 시작...").await;
         sleep(Duration::from_millis(1500)).await;
@@ -346,29 +362,35 @@ jobs:
                     let instruction_content = format!("# ACTIVE INSTRUCTION\n\n{}\n\nRead `plan.md` and execute step by step.", execution_skills);
                     self.write_ipc_file("instruction.md", &instruction_content).await;
                     
-                    self.download_hermes_agent().await;
+                    let is_hardware = self.task_description.to_lowercase().contains("하드웨어") || self.task_description.to_lowercase().contains("회로도") || self.task_description.to_lowercase().contains("sprocket");
                     
-                    sleep(Duration::from_millis(1500)).await;
-                    self.log("- (Hermes) 📦 Plugin SDK & Artifacts 엔진 가동: 샌드박스 렌더링 중...").await;
-                    
-                    let bin_dir = Path::new(&self.workspace_dir).join("bin");
-                    let exe_path = bin_dir.join("hermes-agent.cmd");
-                    
-                    let output = Command::new("cmd")
-                        .args(&["/C", exe_path.to_str().unwrap_or("hermes-agent.cmd")])
-                        .output();
+                    if is_hardware {
+                        self.invoke_sprocket_agent().await;
+                    } else {
+                        self.download_hermes_agent().await;
                         
-                    match output {
-                        Ok(out) => {
-                            let stdout = String::from_utf8_lossy(&out.stdout);
-                            self.log(&format!("   [Hermes Process Output]\n   {}", stdout.trim())).await;
-                        },
-                        Err(e) => {
-                            self.log(&format!("   [Hermes Process Error] Failed to execute: {}", e)).await;
+                        sleep(Duration::from_millis(1500)).await;
+                        self.log("- (Hermes) 📦 Plugin SDK & Artifacts 엔진 가동: 샌드박스 렌더링 중...").await;
+                        
+                        let bin_dir = Path::new(&self.workspace_dir).join("bin");
+                        let exe_path = bin_dir.join("hermes-agent.cmd");
+                        
+                        let output = Command::new("cmd")
+                            .args(&["/C", exe_path.to_str().unwrap_or("hermes-agent.cmd")])
+                            .output();
+                            
+                        match output {
+                            Ok(out) => {
+                                let stdout = String::from_utf8_lossy(&out.stdout);
+                                self.log(&format!("   [Hermes Process Output]\n   {}", stdout.trim())).await;
+                            },
+                            Err(e) => {
+                                self.log(&format!("   [Hermes Process Error] Failed to execute: {}", e)).await;
+                            }
                         }
-                    }
 
-                    self.write_ipc_file("artifact.md", "# 샌드박스 라이브 프리뷰 (Hermes)\nGenerated UI Component.").await;
+                        self.write_ipc_file("artifact.md", "# 샌드박스 라이브 프리뷰 (Hermes)\nGenerated UI Component.").await;
+                    }
                     
                     sleep(Duration::from_millis(1500)).await;
                     self.log("- (Mock) AI 에이전트 코딩 완료 신호 감지!").await;
