@@ -254,10 +254,16 @@ export default function Pico2WCustomPCB() {
     <div className="flex flex-col items-center justify-center p-8 bg-gray-900 text-white min-h-screen">
       <h1 className="text-3xl font-bold mb-8">Pico 2W Custom Minimal PCB</h1>
       <div className="relative w-48 h-80 bg-emerald-800 rounded-xl border-4 border-emerald-900 shadow-2xl flex flex-col items-center p-4 overflow-hidden">
-        {/* USB Type-C Port */}
-        <div className="absolute top-0 w-16 h-6 bg-gray-300 rounded-b-md border-b-2 border-gray-400 flex items-center justify-center -mt-1 shadow-inner">
-          <div className="w-10 h-2 bg-black rounded-full opacity-80"></div>
-          <span className="absolute -top-6 text-xs text-emerald-400 font-mono">USB-C</span>
+        {/* USB Type-C Port (Main) */}
+        <div className="absolute top-0 left-4 w-12 h-6 bg-gray-300 rounded-b-md border-b-2 border-gray-400 flex items-center justify-center -mt-1 shadow-inner">
+          <div className="w-8 h-2 bg-black rounded-full opacity-80"></div>
+          <span className="absolute -top-6 text-[10px] text-emerald-400 font-mono">MAIN</span>
+        </div>
+
+        {/* Secondary USB Type-C Port (Expansion/ESP32) */}
+        <div className="absolute top-0 right-4 w-12 h-6 bg-gray-300 rounded-b-md border-b-2 border-gray-400 flex items-center justify-center -mt-1 shadow-inner">
+          <div className="w-8 h-2 bg-black rounded-full opacity-80"></div>
+          <span className="absolute -top-6 text-[10px] text-emerald-400 font-mono text-center">ESP32</span>
         </div>
 
         {/* RP2350 MCU */}
@@ -274,15 +280,9 @@ export default function Pico2WCustomPCB() {
         </div>
 
         {/* Reset / Refresh Button */}
-        <div className="absolute bottom-16 w-8 h-8 bg-gray-200 rounded-full border-4 border-gray-400 flex items-center justify-center shadow cursor-pointer hover:bg-gray-300 active:scale-95 transition-transform">
+        <div className="absolute bottom-10 w-8 h-8 bg-gray-200 rounded-full border-4 border-gray-400 flex items-center justify-center shadow cursor-pointer hover:bg-gray-300 active:scale-95 transition-transform">
           <div className="w-4 h-4 bg-red-500 rounded-full shadow-inner"></div>
           <span className="absolute -bottom-6 text-xs text-emerald-400 font-mono text-center leading-tight">RESET</span>
-        </div>
-
-        {/* Secondary USB Type-C Port (Expansion/ESP32) */}
-        <div className="absolute bottom-0 w-16 h-6 bg-gray-300 rounded-t-md border-t-2 border-gray-400 flex items-center justify-center -mb-1 shadow-inner">
-          <div className="w-10 h-2 bg-black rounded-full opacity-80"></div>
-          <span className="absolute -bottom-8 text-xs text-emerald-400 font-mono text-center leading-tight">USB-C<br/><span className="text-[9px]">(ESP32/EXP)</span></span>
         </div>
       </div>
     </div>
