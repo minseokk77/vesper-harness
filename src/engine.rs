@@ -195,9 +195,9 @@ jobs:
 
         self.log("   [AI Cloud] 🤖 오픈라우터(무료 클라우드 AI)에 분석을 요청합니다...").await;
         let client = reqwest::Client::new();
-        // 가장 무료 토큰 제한이 넉넉하고 빠른 Gemini Flash 무료 모델로 설정
+        // 2026년 최신 구글 무료 모델 (가장 똑똑하고 넉넉한 토큰)
         let payload = serde_json::json!({
-            "model": "google/gemini-1.5-flash:free",
+            "model": "google/gemma-4-31b-it:free",
             "messages": [
                 {"role": "user", "content": prompt}
             ],
