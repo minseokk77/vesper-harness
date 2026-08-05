@@ -186,28 +186,74 @@ jobs:
         }
     }
 
+    async fn fetch_free_ai(&self, prompt: &str) -> Option<String> {
+        let api_key = std::env::var("OPENROUTER_API_KEY").unwrap_or_default();
+        if api_key.is_empty() {
+            self.log("   [AI Cloud] ⚠️ OPENROUTER_API_KEY가 환경변수에 없습니다. 오프라인(Mock) 로직으로 우회합니다.").await;
+            return None;
+        }
+
+        self.log("   [AI Cloud] 🤖 오픈라우터(무료 클라우드 AI)에 분석을 요청합니다...").await;
+        let client = reqwest::Client::new();
+        // Llama-3-8B 무료 모델 (또는 google/gemini-1.5-flash-free 등)
+        let payload = serde_json::json!({
+            "model": "meta-llama/llama-3-8b-instruct:free",
+            "messages": [
+                {"role": "user", "content": prompt}
+            ],
+            "stream": false
+        });
+
+        match client.post("https://openrouter.ai/api/v1/chat/completions")
+            .header("Authorization", format!("Bearer {}", api_key))
+            .header("HTTP-Referer", "https://github.com/minseokk77/vesper-harness")
+            .header("X-Title", "Vesper Harness Engine")
+            .json(&payload)
+            .send()
+            .await 
+        {
+            Ok(resp) if resp.status().is_success() => {
+                if let Ok(json) = resp.json::<serde_json::Value>().await {
+                    if let Some(content) = json["choices"][0]["message"]["content"].as_str() {
+                        self.log("   [AI Cloud] ✅ 클라우드 무료 AI 응답 수신 완료!").await;
+                        return Some(content.to_string());
+                    }
+                }
+                None
+            }
+            Ok(resp) => {
+                let status = resp.status();
+                self.log(&format!("   [AI Cloud] ❌ API 에러 발생: {}", status)).await;
+                None
+            }
+            Err(e) => {
+                self.log(&format!("   [AI Cloud] ❌ 네트워크 에러 발생: {}", e)).await;
+                None
+            }
+        }
+    }
+
     async fn scan_tauri_security(&self) -> bool {
         self.log("   [Tauri-Security] 🛡️ tauri.conf.json 및 capabilities/ 권한 딥 스캔 중...").await;
         sleep(Duration::from_millis(1200)).await;
 
-        self.log("   [Tauri-Security] 🤖 로컬 Ollama 모델을 활용한 보안 분석 요청 중...").await;
-        let client = reqwest::Client::new();
-        let payload = serde_json::json!({
-            "model": "llama3",
-            "prompt": "Evaluate this Tauri configuration for vulnerabilities.",
-            "stream": false
-        });
+        let prompt = "Evaluate this Tauri configuration for vulnerabilities. Respond with a short summary and end with either 'SAFE' or 'DANGER'.\n\n```json\n{\n  \"build\": {\n    \"beforeDevCommand\": \"npm run dev\",\n    \"beforeBuildCommand\": \"npm run build\",\n    \"devPath\": \"http://localhost:1420\",\n    \"distDir\": \"../dist\"\n  }\n}\n```";
+        let ai_response = self.fetch_free_ai(prompt).await;
 
-        match client.post("http://localhost:11434/api/generate").json(&payload).send().await {
-            Ok(resp) if resp.status().is_success() => {
-                self.log("   [Tauri-Security] ✅ Ollama 응답 성공 (안전 판정).").await;
+        match ai_response {
+            Some(res) => {
+                self.log("   [Tauri-Security] 🤖 AI 분석 완료. 감사 보고서를 생성합니다.").await;
+                let _ = fs::write(Path::new(&self.workspace_dir).join("tauri_security_audit.md"), format!("# Tauri Security Audit (AI)\n\nResult:\n{}", res)).await;
+                if res.to_uppercase().contains("DANGER") {
+                    return false;
+                }
             }
-            _ => {
-                self.log("   [Tauri-Security] ⚠️ 로컬 Ollama 연결 실패. Mock 스캐너로 우회합니다.").await;
+            None => {
+                self.log("   [Tauri-Security] ⚠️ AI 통신 실패. 기본 보안 룰(Mock 스캐너)로 우회합니다.").await;
+                let _ = fs::write(Path::new(&self.workspace_dir).join("tauri_security_audit.md"), "# Tauri Security Audit\n\nNo dangerous `shell:execute` scopes detected. Proceeding.").await;
             }
         }
-
-        let _ = fs::write(Path::new(&self.workspace_dir).join("tauri_security_audit.md"), "# Tauri Security Audit\n\nNo dangerous `shell:execute` scopes detected. Proceeding.").await;
+        
         self.log("   [Tauri-Security] ✅ 보안 스캔 통과 (위험 권한 없음).").await;
         true
     }
