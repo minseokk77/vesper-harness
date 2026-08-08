@@ -20,7 +20,7 @@ pnpm add --global vesper-harness
 vesper --help
 ```
 
-Windows/Linux x64에서는 GitHub Release의 사전 빌드 바이너리를 자동으로 내려받습니다. 바이너리를 받을 수 없으면 로컬 Rust 빌드를 시도하므로 이 경우에는 Rust와 Cargo가 필요합니다.
+Windows/Linux x64에서는 GitHub Release의 사전 빌드 바이너리를 자동으로 내려받습니다. pnpm이 보안상 설치 스크립트를 차단한 경우에도 첫 `vesper` 실행 시 자동으로 다시 설치하므로 Rust는 필요하지 않습니다. 바이너리를 받을 수 없을 때만 로컬 Rust 빌드를 시도합니다.
 
 ### 2. 코딩 에이전트 선택
 
@@ -272,9 +272,9 @@ $env:VESPER_AGENT_ARGS_JSON = '["exec","--sandbox","workspace-write","{instructi
 vesper "새 작업 설명"
 ```
 
-### pnpm 설치 중 바이너리 다운로드 실패
+### pnpm 설치 또는 첫 실행 중 바이너리 다운로드 실패
 
-GitHub Release 접근이 차단됐는지 확인합니다. Rust가 설치되어 있다면 설치 스크립트가 로컬 Release 빌드를 시도합니다.
+GitHub Release 접근이 차단됐는지 확인한 뒤 `vesper --help`를 다시 실행합니다. pnpm이 설치 스크립트를 건너뛰어도 첫 실행 시 바이너리 설치를 다시 시도합니다. 계속 실패하고 Rust가 설치되어 있다면 로컬 Release 빌드로 자동 대체합니다.
 
 ```powershell
 rustc --version

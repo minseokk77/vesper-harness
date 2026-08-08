@@ -17,7 +17,20 @@ const extension = os.platform() === 'win32' ? '.exe' : '';
 const binPath = path.join(__dirname, `vesper${extension}`);
 
 if (!fs.existsSync(binPath)) {
-    console.warn('[Vesper Warn] Pre-built binary not found. Falling back to local cargo run...');
+    console.warn('[Vesper] Pre-built binary not found. Running first-launch setup...');
+    const installerPath = path.join(__dirname, '..', 'scripts', 'install.js');
+    const installResult = spawnSync(process.execPath, [installerPath], {
+        stdio: 'inherit',
+        cwd: path.join(__dirname, '..')
+    });
+
+    if (installResult.error) {
+        console.warn(`[Vesper Warn] First-launch setup failed: ${installResult.error.message}`);
+    }
+}
+
+if (!fs.existsSync(binPath)) {
+    console.warn('[Vesper Warn] Pre-built binary is still unavailable. Falling back to local cargo run...');
     const result = spawnSync('cargo', ['run', '--release', '--', ...process.argv.slice(2)], {
         stdio: 'inherit',
         cwd: path.join(__dirname, '..')
