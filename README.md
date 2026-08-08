@@ -8,10 +8,10 @@ Vesper Harness는 작업을 바로 수정하지 않습니다. 먼저 계획과 �
 
 ### 1. 설치
 
-Node.js 18 이상이 설치된 Windows 또는 Linux x64 환경에서 다음 명령을 실행합니다.
+Node.js 18 이상과 pnpm이 설치된 Windows 또는 Linux x64 환경에서 다음 명령을 실행합니다.
 
 ```powershell
-npm install --global vesper-harness
+pnpm add --global vesper-harness
 ```
 
 설치를 확인합니다.
@@ -236,13 +236,13 @@ cargo run --bin test_skills
 최신 버전으로 업데이트:
 
 ```powershell
-npm install --global vesper-harness@latest
+pnpm add --global vesper-harness@latest
 ```
 
 제거:
 
 ```powershell
-npm uninstall --global vesper-harness
+pnpm remove --global vesper-harness
 ```
 
 ## 문제 해결
@@ -272,7 +272,7 @@ $env:VESPER_AGENT_ARGS_JSON = '["exec","--sandbox","workspace-write","{instructi
 vesper "새 작업 설명"
 ```
 
-### npm 설치 중 바이너리 다운로드 실패
+### pnpm 설치 중 바이너리 다운로드 실패
 
 GitHub Release 접근이 차단됐는지 확인합니다. Rust가 설치되어 있다면 설치 스크립트가 로컬 Release 빌드를 시도합니다.
 
