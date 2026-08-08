@@ -1,6 +1,6 @@
 [package]
 name = "vesper-harness"
-version = "3.2.2"
+version = "3.2.3"
 edition = "2024"
 default-run = "vesper-harness"
 description = "The 5-Stage Core Engine for autonomous AI coding (Aider + SWE-agent + Hermes)"
