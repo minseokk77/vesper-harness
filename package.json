@@ -1,6 +1,6 @@
 {
   "name": "vesper-harness",
-  "version": "3.2.0",
+  "version": "3.2.1",
   "description": "The 5-Stage Core Engine for autonomous AI coding (Aider + SWE-agent + Hermes) with TUI",
   "main": "bin/run.js",
   "bin": {

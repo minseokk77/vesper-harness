@@ -1,4 +1,4 @@
-# Vesper Harness v3.2.0 Core Engine 업데이트 로그
+# Vesper Harness v3.2.1 Core Engine 업데이트 로그
 
 **작업 일시**: 2026-08-08
 **대상 프로젝트**: `vesper-harness` (Rust TUI 코어 엔진 및 CLI 래퍼)

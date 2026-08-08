@@ -63,4 +63,5 @@ jobs:
           registry-url: 'https://registry.npmjs.org'
       - name: Publish npm package
         if: env.NODE_AUTH_TOKEN != ''
+        continue-on-error: true
         run: pnpm publish --no-git-checks
