@@ -3,9 +3,10 @@ const fs = require('fs');
 const path = require('path');
 const os = require('os');
 const { execSync } = require('child_process');
+const { version } = require('../package.json');
 
 const REPO = 'minseokk77/vesper-harness';
-const VERSION = 'v3.0.0';
+const VERSION = `v${version}`;
 
 const platform = os.platform();
 const arch = os.arch();
@@ -86,5 +87,7 @@ download(url, dest)
             }
         } catch (buildErr) {
             console.error('[Vesper] Fallback build failed. Please ensure Rust is installed or download the binary manually.');
+            console.error(buildErr);
+            process.exit(1);
         }
     });

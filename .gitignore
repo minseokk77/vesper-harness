@@ -3,3 +3,5 @@
 Cargo.lock
 .vesper/
 .vesper_history
+.aider*
+node_modules/
